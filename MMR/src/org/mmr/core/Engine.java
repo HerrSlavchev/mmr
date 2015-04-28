@@ -4,6 +4,7 @@ import java.io.IOException;
 import static java.nio.file.FileVisitOption.FOLLOW_LINKS;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -12,16 +13,24 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 
-/**
- * Used to process a context.
- */
 public final class Engine {
+
+	private static final Directory DIRECOTRY = new RAMDirectory();
 
 	private Engine() {
 	}
@@ -56,35 +65,46 @@ public final class Engine {
 	}
 
 	private static IndexWriter createIndexWriter() throws IOException {
-		final Directory directory = new RAMDirectory();
-
 		final Analyzer analyzer = new StandardAnalyzer();
 		final IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
 		indexWriterConfig.setOpenMode(OpenMode.CREATE);
 
-		return new IndexWriter(directory, indexWriterConfig);
+		return new IndexWriter(DIRECOTRY, indexWriterConfig);
 	}
 
 	/**
-	 * Attempts to find all indexed documents (in the given context) containing
-	 * a specific query.
+	 * Attempts to find all indexed documents containing a specific query.
 	 *
-	 * @param query - the query text
-	 * @param ctx - a corresponding context where we search for results
-	 * @return - the results from this query against the given context
+	 * @param queryString - the query string
+	 * @return - the results from this query search
+	 *
+	 * @throws java.io.IOException
+	 * @throws org.apache.lucene.queryparser.classic.ParseException
 	 */
-	public static List<Object> processQuery(String query, Context ctx) {
-
-		if (query == null || query.isEmpty()) {
+	public static List<DocumentBean> search(final String queryString) throws IOException, ParseException {
+		if (queryString == null || queryString.trim().isEmpty()) {
 			throw new RuntimeException("Missing query!");
 		}
-		Object indexData = null;// ctx.getIndexData();
-		if (indexData == null) {
-			throw new RuntimeException("Missing indexing data!");
-		}
-		List<Object> result = null;
-		///...magic!
 
-		return result;
+		try (final IndexReader reader = DirectoryReader.open(DIRECOTRY)) {
+			final IndexSearcher searcher = new IndexSearcher(reader);
+			final Analyzer analyzer = new StandardAnalyzer();
+
+			final QueryParser parser = new QueryParser(DocumentBean.CONTENT_FIELD_NAME, analyzer);
+			final Query query = parser.parse(queryString);
+
+			final TopDocs topDocs = searcher.search(query, 1000);
+
+			final List<DocumentBean> documentBeans = new ArrayList<>();
+
+			for (final ScoreDoc scoreDoc : topDocs.scoreDocs) {
+				final Document document = searcher.doc(scoreDoc.doc);
+
+				documentBeans.add(DocumentBean.of(document));
+			}
+
+			return documentBeans;
+		}
 	}
+
 }
