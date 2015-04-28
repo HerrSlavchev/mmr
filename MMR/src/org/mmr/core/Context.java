@@ -1,46 +1,41 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.mmr.core;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.file.Path;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 /**
- * Use to share state and configuration among components.
- *
- * @author root
+ * Used for state and configuration sharing among components.
  */
-public class Context {
+public final class Context {
 
-    private File chosenDirectory;
-    private List<MIMEEnum> allowedMIMEs = new ArrayList<>();
-    private Object indexData;
+	private Path chosenDirectory;
 
-    public File getChosenDirectory() {
-        return chosenDirectory;
-    }
+	private final Set<EContentType> allowedContentTypes = new HashSet<>();
 
-    public void setChosenDirectory(File chosenDirectory) {
-        this.chosenDirectory = chosenDirectory;
-    }
+	{
+		// Default allowed content types are initialized.
+		allowedContentTypes.add(EContentType.TXT);
+		allowedContentTypes.add(EContentType.HTML);
+	}
 
-    public List<MIMEEnum> getAllowedMIMEs() {
-        return allowedMIMEs;
-    }
+	public Optional<Path> getChosenDirectory() {
+		return Optional.ofNullable(chosenDirectory);
+	}
 
-    public void setAllowedMIMEs(List<MIMEEnum> mimes) {
-        this.allowedMIMEs = mimes;
-    }
+	public void setChosenDirectory(final Path directory) {
+		chosenDirectory = directory;
+	}
 
-    public Object getIndexData() {
-        return indexData;
-    }
+	public Set<EContentType> getAllowedContentTypes() {
+		return allowedContentTypes;
+	}
 
-    public void setIndexData(Object indexData) {
-        this.indexData = indexData;
-    }
+	public void setAllowedContentTypes(final Collection<EContentType> contentTypes) {
+		allowedContentTypes.clear();
+		allowedContentTypes.addAll(contentTypes);
+	}
+
 }

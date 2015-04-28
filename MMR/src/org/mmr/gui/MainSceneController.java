@@ -16,7 +16,6 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -27,7 +26,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.mmr.core.Context;
 import org.mmr.core.Engine;
-import org.mmr.core.MIMEEnum;
+import org.mmr.core.EContentType;
 
 /**
  * FXML Controller class
@@ -76,7 +75,7 @@ public class MainSceneController implements Initializable {
     private void jbDirClicked(ActionEvent ae) {
         File chosenDir = chooser.showDialog(MainClass.getStage());
         if (chosenDir != null) {
-            context.setChosenDirectory(chosenDir);
+            context.setChosenDirectory(chosenDir.toPath());
             //save last choice
             String dirPath = chosenDir.getAbsolutePath();
             File parentDir = chosenDir.getParentFile();
@@ -89,26 +88,18 @@ public class MainSceneController implements Initializable {
 
     @FXML
     private void jbBuildClicked(ActionEvent ae) {
-        List<MIMEEnum> chosenMIMEs = new ArrayList<>();
+        List<EContentType> chosenMIMEs = new ArrayList<>();
         if (chbTXT.isSelected()) {
-            chosenMIMEs.add(MIMEEnum.TXT);
+            chosenMIMEs.add(EContentType.TXT);
         }
         if (chbHTML.isSelected()) {
-            chosenMIMEs.add(MIMEEnum.HTML);
+            chosenMIMEs.add(EContentType.HTML);
         }
-        if (chbPDF.isSelected()) {
-            chosenMIMEs.add(MIMEEnum.PDF);
-        }
-        if (chbODT.isSelected()) {
-            chosenMIMEs.add(MIMEEnum.ODT);
-        }
-        if (chbDOC.isSelected()) {
-            chosenMIMEs.add(MIMEEnum.DOC);
-        }
-        context.setAllowedMIMEs(chosenMIMEs);
+        
+        context.setAllowedContentTypes(chosenMIMEs);
 
         try {
-            Engine.createIndexData(context);
+            Engine.createIndex(context);
         } catch (RuntimeException eR) {
             showDialog(eR.getMessage());
         }
