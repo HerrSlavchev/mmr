@@ -98,6 +98,7 @@ final class EngineDirectoryVisitor implements FileVisitor<Path> {
 	}
 
 	private void addDocumentBeanToIndex(final DocumentBean documentBean) throws IOException {
+		System.out.println("Add: " + documentBean);
 		indexWriter.addDocument(documentBean.asDocument());
 	}
 }
