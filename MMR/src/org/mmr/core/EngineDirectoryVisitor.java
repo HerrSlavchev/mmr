@@ -23,7 +23,7 @@ final class EngineDirectoryVisitor implements FileVisitor<Path> {
 
 	private final Tika contentTypeDetector = new Tika();
 
-	public EngineDirectoryVisitor(final Set<EContentType> allowedContentTypes, final IndexWriter indexWriter) {
+	EngineDirectoryVisitor(final Set<EContentType> allowedContentTypes, final IndexWriter indexWriter) {
 		this.allowedContentTypes = allowedContentTypes;
 		this.indexWriter = indexWriter;
 	}
