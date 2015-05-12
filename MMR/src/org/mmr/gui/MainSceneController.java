@@ -110,12 +110,13 @@ public class MainSceneController implements Initializable {
 			documentBeans.stream().forEach((documentBean) -> {
 				taResults.appendText(documentBean.toString() + "\n");
 			});
-		} catch (final IOException | ParseException exception) {
+		} catch (IOException | ParseException exception) {
 			final String errorMessage = exception.getMessage();
 
 			Logger.getGlobal().log(Level.SEVERE, errorMessage, exception);
-			showDialog(errorMessage);
-		}
+		} catch (RuntimeException eR) {
+                    showDialog(eR.getMessage());
+                }
 	}
 
 	/**
@@ -125,6 +126,8 @@ public class MainSceneController implements Initializable {
 	 */
 	private void showDialog(String message) {
 		Stage dialogStage = new Stage();
+                dialogStage.setResizable(false);
+                dialogStage.setAlwaysOnTop(true);
 		dialogStage.initModality(Modality.APPLICATION_MODAL);
 		dialogStage.setScene(new Scene(VBoxBuilder.create().
 				children(new Text(message)).
