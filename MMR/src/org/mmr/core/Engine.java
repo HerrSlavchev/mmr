@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexNotFoundException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -32,7 +33,7 @@ import org.apache.lucene.store.RAMDirectory;
  */
 public final class Engine {
 
-	private static final Directory DIRECOTRY = new RAMDirectory();
+	private static final Directory DIRECTORY = new RAMDirectory();
 
 	private static final Analyzer ANALYZER = new EngineAnalyser();
 
@@ -72,7 +73,7 @@ public final class Engine {
 		final IndexWriterConfig indexWriterConfig = new IndexWriterConfig(ANALYZER);
 		indexWriterConfig.setOpenMode(OpenMode.CREATE);
 
-		return new IndexWriter(DIRECOTRY, indexWriterConfig);
+		return new IndexWriter(DIRECTORY, indexWriterConfig);
 	}
 
 	/**
@@ -90,7 +91,7 @@ public final class Engine {
 			throw new RuntimeException("Missing query!");
 		}
 
-		try (final IndexReader reader = DirectoryReader.open(DIRECOTRY)) {
+		try (final IndexReader reader = DirectoryReader.open(DIRECTORY)) {
 			final IndexSearcher searcher = new IndexSearcher(reader);
 
 			final QueryParser parser = new QueryParser(DocumentBean.CONTENT_FIELD_NAME, ANALYZER);
@@ -107,7 +108,9 @@ public final class Engine {
 			}
 
 			return documentBeans;
-		}
+		} catch (IndexNotFoundException infE){
+                    throw new RuntimeException("No current index exists!");
+                }
 	}
 
 }
