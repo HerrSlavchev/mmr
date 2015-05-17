@@ -7,8 +7,14 @@ import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 
+/**
+ * Application specific presentation of document.
+ */
 public final class DocumentBean {
 
+	/**
+	 * Declaration of fields, used for document storage in Lucene.
+	 */
 	public static final String CONTENT_FIELD_NAME = "content";
 
 	private static final String PATH_FIELD_NAME = "path";
@@ -31,6 +37,12 @@ public final class DocumentBean {
 		this.content = content;
 	}
 
+	/**
+	 * Converts Lucene document to application specific document.
+	 *
+	 * @param document
+	 * @return
+	 */
 	public static final DocumentBean of(final Document document) {
 		final String path = document.get(PATH_FIELD_NAME);
 		final String content = "";
@@ -43,6 +55,11 @@ public final class DocumentBean {
 		}
 	}
 
+	/**
+	 * Converts application specific document to Lucene document.
+	 *
+	 * @return
+	 */
 	public Document asDocument() {
 		final Document document = new Document();
 

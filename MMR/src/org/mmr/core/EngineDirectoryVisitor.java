@@ -15,6 +15,11 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.tika.Tika;
 import org.jsoup.Jsoup;
 
+/**
+ * Defines the recursive traversal of given folder. Based on the allowed content
+ * types files are filtered. Their content is extracted and sent to Lucene for
+ * indexing.
+ */
 final class EngineDirectoryVisitor implements FileVisitor<Path> {
 
 	private final Set<EContentType> allowedContentTypes;
@@ -79,6 +84,14 @@ final class EngineDirectoryVisitor implements FileVisitor<Path> {
 		return FileVisitResult.CONTINUE;
 	}
 
+	/**
+	 * A plain text file is parsed. Its bytes are converted to String using the
+	 * UTF-8 encoding.
+	 *
+	 * @param path
+	 * @return
+	 * @throws IOException
+	 */
 	private DocumentBean getTxtDocumentBean(final Path path) throws IOException {
 		final String absolutePath = path.toAbsolutePath().toString();
 		final byte[] bytes = Files.readAllBytes(path);
@@ -87,6 +100,14 @@ final class EngineDirectoryVisitor implements FileVisitor<Path> {
 		return new DocumentBean(absolutePath, content);
 	}
 
+	/**
+	 * A html file is parsed using the Jsoup library. Text and title are
+	 * extracted using the UTF-8 encoding.
+	 *
+	 * @param path
+	 * @return
+	 * @throws IOException
+	 */
 	private DocumentBean getHtmlDocumentBean(final Path path) throws IOException {
 		final String absolutePath = path.toAbsolutePath().toString();
 
@@ -98,7 +119,6 @@ final class EngineDirectoryVisitor implements FileVisitor<Path> {
 	}
 
 	private void addDocumentBeanToIndex(final DocumentBean documentBean) throws IOException {
-		System.out.println("Add: " + documentBean);
 		indexWriter.addDocument(documentBean.asDocument());
 	}
 }

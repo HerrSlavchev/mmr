@@ -77,8 +77,7 @@ public final class Engine {
 	}
 
 	/**
-	 * Attempts to find all indexed documents containing a specific query. a
-	 * specific query.
+	 * Attempts to find all indexed documents containing a specific query.
 	 *
 	 * @param queryString - the query string
 	 * @return - the results from this query search
@@ -108,9 +107,9 @@ public final class Engine {
 			}
 
 			return documentBeans;
-		} catch (IndexNotFoundException infE){
-                    throw new RuntimeException("No current index exists!");
-                }
+		} catch (IndexNotFoundException infE) {
+			throw new RuntimeException("No current index exists!");
+		}
 	}
 
 }

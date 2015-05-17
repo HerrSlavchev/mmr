@@ -6,6 +6,10 @@ import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.core.LowerCaseTokenizer;
 import org.apache.lucene.analysis.en.PorterStemFilter;
 
+/**
+ * Defines an application specific analyzer. Each token is converted to lower
+ * case and stemmed with the Porter Stemmer.
+ */
 final class EngineAnalyser extends Analyzer {
 
 	EngineAnalyser() {

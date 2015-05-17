@@ -15,6 +15,12 @@ public enum EContentType {
 		this.value = value;
 	}
 
+	/**
+	 * Parses the given value and returns EcontentType instance, if such exists.
+	 *
+	 * @param value
+	 * @return
+	 */
 	public static final Optional<EContentType> of(final String value) {
 		for (final EContentType contentType : EContentType.values()) {
 			if (value.toLowerCase().startsWith(contentType.value)) {
